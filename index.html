@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Image Resizer</title>
+  <title>Image Upscale & Reducer - Raja</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-  <h2>📸 Smart Image Resizer</h2>
+  <h2>🖼️ Image Upscale & Reducer</h2>
+  <p class="owner">Created by <span>Raja</span></p>
 
   <input type="file" id="upload" accept="image/*">
 
@@ -25,14 +26,21 @@
     <option value="feet">Feet</option>
   </select>
 
-  <label>Image Quality: <span id="qVal">80</span>%</label>
-  <input type="range" id="quality" min="10" max="100" value="80">
+  <div class="row">
+    <input type="number" id="targetSize" placeholder="Target Size">
+    <select id="sizeUnit">
+      <option value="kb">KB</option>
+      <option value="mb">MB</option>
+    </select>
+  </div>
 
-  <button onclick="resizeImage()">Resize & Compress</button>
+  <button onclick="processImage()">Resize & Convert</button>
 
   <canvas id="canvas"></canvas>
 
-  <a id="download" download="resized-image.jpg">⬇ Download Image</a>
+  <p id="finalSize"></p>
+
+  <a id="download" download="image-by-raja.jpg">⬇ Download Image</a>
 </div>
 
 <script src="script.js"></script>
