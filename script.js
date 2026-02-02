@@ -25,8 +25,8 @@ function processImage() {
   let width = toPx(w, unit);
   let height = toPx(h, unit);
 
-  // 🔥 MOBILE SAFE LIMIT
-  const MAX = 2000;
+  // Mobile-safe limit
+  const MAX = 1800;
   if (width > MAX || height > MAX) {
     const ratio = Math.min(MAX / width, MAX / height);
     width *= ratio;
@@ -41,25 +41,41 @@ function processImage() {
   const sizeUnit = document.getElementById("sizeUnit").value;
   const targetKB = sizeUnit === "mb" ? target * 1024 : target;
 
-  let minQ = 0.2;
-  let maxQ = 0.9;
-  let bestData = null;
-  let bestSize = Infinity;
+  let quality = 0.9;
+  let output = "";
+  let sizeKB = Infinity;
 
-  for (let i = 0; i < 15; i++) {
-    let q = (minQ + maxQ) / 2;
-    let data = canvas.toDataURL("image/jpeg", q);
-    let sizeKB = (data.length * 3) / 4 / 1024;
-
-    if (Math.abs(sizeKB - targetKB) < Math.abs(bestSize - targetKB)) {
-      bestSize = sizeKB;
-      bestData = data;
-    }
-
-    sizeKB > targetKB ? maxQ = q : minQ = q;
+  while (quality > 0.05) {
+    output = canvas.toDataURL("image/jpeg", quality);
+    sizeKB = (output.length * 3) / 4 / 1024;
+    if (sizeKB <= targetKB) break;
+    quality -= 0.03;
   }
 
-  document.getElementById("download").href = bestData;
+  document.getElementById("download").href = output;
   document.getElementById("finalSize").innerText =
-    `Final Size: ${bestSize.toFixed(1)} KB (${(bestSize / 1024).toFixed(2)} MB)`;
+    `Final Size: ${Math.round(sizeKB)} KB (${(sizeKB / 1024).toFixed(2)} MB)`;
+
+  document.getElementById("statusMsg").style.display = "none";
+}
+
+// Download popup + reset
+document.getElementById("download").addEventListener("click", () => {
+  setTimeout(() => {
+    alert("✅ Image downloaded successfully!");
+    resetTool();
+  }, 300);
+});
+
+function resetTool() {
+  document.getElementById("upload").value = "";
+  document.getElementById("width").value = "";
+  document.getElementById("height").value = "";
+  document.getElementById("targetSize").value = "";
+  document.getElementById("finalSize").innerText = "";
+
+  const canvas = document.getElementById("canvas");
+  canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+  document.getElementById("statusMsg").style.display = "block";
 }
