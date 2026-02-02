@@ -6,36 +6,44 @@ document.getElementById("upload").addEventListener("change", e => {
   reader.readAsDataURL(e.target.files[0]);
 });
 
-document.getElementById("quality").addEventListener("input", e => {
-  document.getElementById("qVal").innerText = e.target.value;
-});
-
-function convertToPx(value, unit) {
-  const dpi = 96; // standard screen DPI
+// Convert units to pixels
+function toPx(value, unit) {
+  const dpi = 96;
   if (unit === "cm") return value * dpi / 2.54;
   if (unit === "inch") return value * dpi;
   if (unit === "feet") return value * dpi * 12;
-  return value; // px
+  return value;
 }
 
-function resizeImage() {
+function processImage() {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
   const unit = document.getElementById("unit").value;
-  const wInput = document.getElementById("width").value || img.width;
-  const hInput = document.getElementById("height").value || img.height;
+  const w = document.getElementById("width").value || img.width;
+  const h = document.getElementById("height").value || img.height;
 
-  const width = convertToPx(wInput, unit);
-  const height = convertToPx(hInput, unit);
+  canvas.width = toPx(w, unit);
+  canvas.height = toPx(h, unit);
 
-  const quality = document.getElementById("quality").value / 100;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-  canvas.width = width;
-  canvas.height = height;
+  const target = document.getElementById("targetSize").value;
+  const sizeUnit = document.getElementById("sizeUnit").value;
 
-  ctx.drawImage(img, 0, 0, width, height);
+  let targetKB = sizeUnit === "mb" ? target * 1024 : target;
 
-  const output = canvas.toDataURL("image/jpeg", quality);
+  let quality = 0.9;
+  let output;
+  let sizeKB;
+
+  do {
+    output = canvas.toDataURL("image/jpeg", quality);
+    sizeKB = Math.round((output.length * 3) / 4 / 1024);
+    quality -= 0.05;
+  } while (sizeKB > targetKB && quality > 0.1);
+
   document.getElementById("download").href = output;
+  document.getElementById("finalSize").innerText =
+    `Final Size: ${sizeKB} KB (${(sizeKB / 1024).toFixed(2)} MB)`;
 }
