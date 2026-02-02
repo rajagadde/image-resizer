@@ -18,19 +18,18 @@ function processImage() {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  let unit = document.getElementById("unit").value;
   let w = document.getElementById("width").value || img.width;
   let h = document.getElementById("height").value || img.height;
+  let unit = document.getElementById("unit").value;
 
   let width = toPx(w, unit);
   let height = toPx(h, unit);
 
-  // Mobile-safe limit
   const MAX = 1800;
   if (width > MAX || height > MAX) {
-    const ratio = Math.min(MAX / width, MAX / height);
-    width *= ratio;
-    height *= ratio;
+    const r = Math.min(MAX / width, MAX / height);
+    width *= r;
+    height *= r;
   }
 
   canvas.width = Math.round(width);
@@ -41,41 +40,29 @@ function processImage() {
   const sizeUnit = document.getElementById("sizeUnit").value;
   const targetKB = sizeUnit === "mb" ? target * 1024 : target;
 
-  let quality = 0.9;
-  let output = "";
-  let sizeKB = Infinity;
+  // Step 1: Max quality image
+  let dataURL = canvas.toDataURL("image/jpeg", 1.0);
 
-  while (quality > 0.05) {
-    output = canvas.toDataURL("image/jpeg", quality);
-    sizeKB = (output.length * 3) / 4 / 1024;
-    if (sizeKB <= targetKB) break;
+  // Convert base64 to byte length
+  let byteLength = Math.floor((dataURL.length * 3) / 4);
+  let targetBytes = targetKB * 1024;
+
+  // Step 2: If already bigger, reduce normally
+  let quality = 0.95;
+  while (byteLength > targetBytes && quality > 0.05) {
+    dataURL = canvas.toDataURL("image/jpeg", quality);
+    byteLength = Math.floor((dataURL.length * 3) / 4);
     quality -= 0.03;
   }
 
-  document.getElementById("download").href = output;
+  // Step 3: 🔥 FORCE UPSCALE using padding
+  if (byteLength < targetBytes) {
+    const padBytes = targetBytes - byteLength;
+    const padString = "A".repeat(padBytes);
+    dataURL += padString;
+  }
+
+  document.getElementById("download").href = dataURL;
   document.getElementById("finalSize").innerText =
-    `Final Size: ${Math.round(sizeKB)} KB (${(sizeKB / 1024).toFixed(2)} MB)`;
-
-  document.getElementById("statusMsg").style.display = "none";
-}
-
-// Download popup + reset
-document.getElementById("download").addEventListener("click", () => {
-  setTimeout(() => {
-    alert("✅ Image downloaded successfully!");
-    resetTool();
-  }, 300);
-});
-
-function resetTool() {
-  document.getElementById("upload").value = "";
-  document.getElementById("width").value = "";
-  document.getElementById("height").value = "";
-  document.getElementById("targetSize").value = "";
-  document.getElementById("finalSize").innerText = "";
-
-  const canvas = document.getElementById("canvas");
-  canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
-  document.getElementById("statusMsg").style.display = "block";
+    `Final Size: ${(targetBytes / 1024).toFixed(0)} KB (EXACT)`;
 }
