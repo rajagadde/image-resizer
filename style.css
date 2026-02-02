@@ -1,0 +1,60 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: #fff;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  background: #667eea;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #5a67d8;
+}
+
+canvas {
+  max-width: 100%;
+  margin-top: 15px;
+}
+
+#download {
+  display: block;
+  margin-top: 12px;
+  background: green;
+  color: white;
+  padding: 10px;
+  text-decoration: none;
+  border-radius: 6px;
+}

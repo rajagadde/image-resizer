@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Image Resizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>📸 Smart Image Resizer</h2>
+
+  <input type="file" id="upload" accept="image/*">
+
+  <div class="row">
+    <input type="number" id="width" placeholder="Width">
+    <input type="number" id="height" placeholder="Height">
+  </div>
+
+  <select id="unit">
+    <option value="px">Pixels (px)</option>
+    <option value="cm">Centimeters (cm)</option>
+    <option value="inch">Inches</option>
+    <option value="feet">Feet</option>
+  </select>
+
+  <label>Image Quality: <span id="qVal">80</span>%</label>
+  <input type="range" id="quality" min="10" max="100" value="80">
+
+  <button onclick="resizeImage()">Resize & Compress</button>
+
+  <canvas id="canvas"></canvas>
+
+  <a id="download" download="resized-image.jpg">⬇ Download Image</a>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
