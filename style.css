@@ -78,3 +78,10 @@ canvas {
   text-decoration: none;
   border-radius: 6px;
 }
+
+#statusMsg {
+  display: none;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #2d7a2d;
+}
